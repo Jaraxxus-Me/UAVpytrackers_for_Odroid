@@ -114,4 +114,4 @@ def main(visulization=False,track=AutoTrack):
 
 
 if __name__ == '__main__':
-    main(True,ARCF)
+    main(True,AutoTrack)

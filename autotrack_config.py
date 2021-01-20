@@ -25,7 +25,7 @@ class AutoTrackConfig:
     output_sigma_factor = 0.06    # label function sigma
 
     # ADMM params
-    max_iterations=4
+    max_iterations=3
     init_penalty_factor=1
     max_penalty_factor=10000
     penalty_scale_step=10
