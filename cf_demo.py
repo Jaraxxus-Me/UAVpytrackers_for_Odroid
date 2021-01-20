@@ -1,27 +1,11 @@
 import os
-#from examples.pytracker import PyTracker
-#from lib.utils import get_ground_truthes,plot_precision,plot_success
 import time
 from autotrack import AutoTrack
-# from arcf import ARCF
+from arcf import ARCF
 import glob
 import cv2
 import numpy as np
-#if __name__ == '__main__':
-#    data_dir='/media/li/CA5CF8AE5CF89683/research/Dataset_UAV123/UAV123/data_seq'
-#    anno_dir='/media/li/CA5CF8AE5CF89683/research/Dataset_UAV123/UAV123/anno/UAV123'
-#    data_names=sorted(os.listdir(data_dir))
-##    data_names.remove('bike1')
-#    print(data_names)
-##    dataset_config=UAVDatasetConfig('E:\\research\\Dataset_UAV123\\UAV123\\data_seq')
-#    for data_name in data_names:
-#        data_path=os.path.join(data_dir,data_name)
-##        if data_name in dataset_config.frames.keys():
-##            start_frame,end_frame=dataset_config.frames[data_name][:2]
-##        img_dir = os.path.join(data_path,'img')
-#        gt_path=os.path.join(anno_dir,data_name+'.txt')
-#        tracker = PyTracker(data_path,gt_path,tracker_type='AutoTrack')
-#        poses=tracker.tracking(verbose=True,video_path=os.path.join('../results/CF',data_name+'_vis.avi'))
+
 def get_init_gt(anno_path):
     gt_path = os.path.join(anno_path)
     with open(gt_path, 'r') as f:
@@ -48,12 +32,6 @@ def get_ground_truthes(anno_path):
             line = f.readline()
             if line=='':
                 gts=np.array(gts,dtype=np.float32)
-
-                #for i in range(4):  # x, y, width, height
-                #    xp = range(0, gts.shape[0], 5)
-                #    fp = gts[xp, i]
-                #    x = range(gts.shape[0])
-                #    gts[:, i] = pylab.interp(x, xp, fp)
                 return gts
             if ',' in line:
                 gt_pos = line.split(',')
@@ -63,12 +41,12 @@ def get_ground_truthes(anno_path):
             gts.append(gt_pos_int)
 
 
-def main(visulization=False):
+def main(visulization=False,track=AutoTrack):
     data_dir='/home/v4r/Dataset/UAVDT/data_seq'
     anno_dir='/home/v4r/Dataset/UAVDT/anno'
     data_names=sorted(os.listdir(data_dir))
     print(data_names)
-    tracker = AutoTrack()
+    tracker = track()
 
     # setup experiments
     video_paths = sorted(glob.glob(os.path.join(data_dir, '*')))
@@ -87,14 +65,6 @@ def main(visulization=False):
         frame_list.sort()
         init_rect=get_init_gt(gt_path)
         gts=get_ground_truthes(gt_path)
-#        video_name = os.path.basename(video_path)
-#        video_file = os.path.join(video_path, '%s.mp4'%mode)
-#        res_file = os.path.join(video_path, '%s_label.json'%mode)
-#        with open(res_file, 'r') as f:
-#            label_res = json.load(f)
-#
-#        init_rect = label_res['gt_rect'][0]
-#        capture = cv2.VideoCapture(video_file)
         out_res = []
         ut=0
         for frame_id in range(len(frame_list)):
@@ -144,4 +114,4 @@ def main(visulization=False):
 
 
 if __name__ == '__main__':
-    main(True)
+    main(True,ARCF)

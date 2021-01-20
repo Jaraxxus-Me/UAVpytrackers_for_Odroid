@@ -14,7 +14,7 @@ import time
 from bacflibs.utils import cos_window,gaussian2d_rolled_labels
 from bacflibs.fft_tools import fft2,ifft2
 # from bacflibs.feature import extract_hog_feature,extract_pyhog_feature,extract_cn_feature
-from bacflibs.feature import extract_pyhog_feature,extract_cn_feature
+from bacflibs.feature import extract_hog_feature,extract_cn_feature
 import autotrack_config
 from bacflibs.cf_utils import resp_newton,mex_resize,resize_dft2,circShift
 from bacflibs.scale_estimator import DSSTScaleEstimator
@@ -223,7 +223,7 @@ class AutoTrack(object):
 #                self.score = np.roll(self.score, int(np.floor(self.score.shape[0] / 2)), axis=0)
 #                self.score = np.roll(self.score, int(np.floor(self.score.shape[1] / 2)), axis=1)
         dx, dy = (disp_col * self.cell_size*self.sc), (disp_row * self.cell_size*self.sc)
-#        trans_vec=np.array(np.round([dx,dy]))
+        # trans_vec=np.array(np.round([dx,dy]))
 #        old_pos = self._center
         self._center = (np.round(sample_pos[0] +dx), np.round(sample_pos[1] + dy))
 #        print(self._center)
@@ -239,15 +239,15 @@ class AutoTrack(object):
                                                 a_max=self._max_scale_factor)
         
         #training
-#        shift_sample_pos=np.array(2.0*np.pi*trans_vec/(self.sc*np.array(self.crop_size,dtype=float)))
+        # shift_sample_pos=np.array(2.0*np.pi*trans_vec/(self.sc*np.array(self.crop_size,dtype=float)))
 #        shift_sample() hard to ensure objectiveness....
 #        consider using original ways-----LBW
-#        xlf_hc=self.shift_sample(xtf_hc, shift_sample_pos, self.kx, self.ky.T)
+        # xlf_hc=self.shift_sample(xtf_hc, shift_sample_pos, self.kx, self.ky.T)
         patch = self.get_sub_window(current_frame, self._center, model_sz=self.crop_size,
-                                         scaled_sz=(int(np.round(self.crop_size[0] * self.sc)),
+                                          scaled_sz=(int(np.round(self.crop_size[0] * self.sc)),
                                                     int(np.round(self.crop_size[1] * self.sc))))
         patch=patch[:,:,[2,1,0]]
-#        xl_hc =self.extrac_feature_test(patch, (50,50))
+        xl_hc =self.extrac_feature_test(patch, (50,50))
         xl_hc = self.extrac_hc_feature(patch, self.cell_size)
         xlw_hc = xl_hc * self.cosine_window[:, :, None]
         xlf_hc = fft2(xlw_hc)
@@ -258,7 +258,7 @@ class AutoTrack(object):
         return [(self._center[0] - (target_sz[0]) / 2), (self._center[1] -(target_sz[1]) / 2), target_sz[0],target_sz[1]]
 
     def extrac_hc_feature(self,patch,cell_size,normalization=False):
-        hog_features=extract_pyhog_feature(patch,cell_size)
+        hog_features=extract_hog_feature(patch,cell_size)
         cn_features=extract_cn_feature(patch,cell_size)
         hc_features=np.concatenate((hog_features,cn_features),axis=2)
 #        hc_features=hog_features

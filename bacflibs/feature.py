@@ -1,13 +1,13 @@
 import cv2
 import numpy as np
-# from .bacffeatures import fhog, TableFeature
+from .bacffeatures import fhog, TableFeature
 from .bacffeatures import TableFeature
 from .lookup_tables import fhog as pyfhog
 
 
-# def extract_hog_feature(img, cell_size=4):
-#     fhog_feature = fhog(img.astype(np.float32),cell_size,num_orients=9,clip=0.2)[:,:,:-1]
-#     return fhog_feature
+def extract_hog_feature(img, cell_size=4):
+    fhog_feature = fhog(img.astype(np.float32),cell_size,num_orients=9,clip=0.2)[:,:,:-1]
+    return fhog_feature
 
 def extract_pyhog_feature(img, cell_size=4):
     h,w=img.shape[:2]

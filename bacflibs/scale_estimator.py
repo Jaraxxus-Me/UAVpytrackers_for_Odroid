@@ -1,8 +1,8 @@
 import numpy as np
 import cv2
 from numpy.fft import fft, ifft
-# from .feature import extract_hog_feature
-from .feature import extract_pyhog_feature
+from .feature import extract_hog_feature
+#from .feature import extract_pyhog_feature
 from .utils import cos_window
 from .fft_tools import ifft2,fft2
 
@@ -147,7 +147,7 @@ class DSSTScaleEstimator:
                 interpolation = cv2.INTER_AREA
             im_patch_resized = cv2.resize(im_patch, (int(scale_model_sz[0]),int(scale_model_sz[1])), interpolation=interpolation).astype(np.uint8)
             im_patch_resized=im_patch_resized[:,:,[2,1,0]]
-            temp=extract_pyhog_feature(im_patch_resized,cell_size=4)
+            temp=extract_hog_feature(im_patch_resized,cell_size=4)
 #            temp=self.extrac_feature_test(im_patch, (4,8), 31)
             scale_sample.append(temp.reshape((-1,1),order="F")*window[idx])
         scale_sample = np.concatenate(scale_sample, axis=1)
@@ -173,7 +173,7 @@ class DSSTScaleEstimator:
                     interpolation = cv2.INTER_AREA
                 im_patch_resized = cv2.resize(im_patch, (int(scale_model_sz[0]),int(scale_model_sz[1])), interpolation=interpolation).astype(np.uint8)
                 im_patch_resized=im_patch_resized[:,:,[2,1,0]]
-                temp=extract_pyhog_feature(im_patch_resized,cell_size=4)
+                temp=extract_hog_feature(im_patch_resized,cell_size=4)
 #                temp=self.extrac_feature_test(im_patch, (4,8), 31)
                 out.append(temp.reshape((-1, 1),order="F")*scale_window[nScales-shift_pos+i])
             out=np.concatenate(out, axis=1)
@@ -187,7 +187,7 @@ class DSSTScaleEstimator:
                     interpolation = cv2.INTER_AREA
                 im_patch_resized = cv2.resize(im_patch, (int(scale_model_sz[0]),int(scale_model_sz[1])), interpolation=interpolation).astype(np.uint8)
                 im_patch_resized=im_patch_resized[:,:,[2,1,0]]
-                temp=extract_pyhog_feature(im_patch_resized,cell_size=4)
+                temp=extract_hog_feature(im_patch_resized,cell_size=4)
 #                temp=self.extrac_feature_test(im_patch, (8,4), 31)
                 out.append(temp.reshape((-1, 1),order="F")*scale_window[i])
             for j in range(nScales+shift_pos):
@@ -229,7 +229,7 @@ class LPScaleEstimator:
         patchLp = cv2.logPolar(patchL.astype(np.float32), ((patchL.shape[1] - 1) / 2, (patchL.shape[0] - 1) / 2),
                                self.mag, flags=cv2.INTER_LINEAR + cv2.WARP_FILL_OUTLIERS)
 
-        self.model_patchLp = extract_pyhog_feature(patchLp, cell_size=4)
+        self.model_patchLp = extract_hog_feature(patchLp, cell_size=4)
 
     def update(self,im,pos,base_target_sz,current_scale_factor):
         patchL = cv2.getRectSubPix(im, (int(np.floor(current_scale_factor * self.scale_sz[0])),
@@ -238,7 +238,7 @@ class LPScaleEstimator:
         # convert into logpolar
         patchLp = cv2.logPolar(patchL.astype(np.float32), ((patchL.shape[1] - 1) / 2, (patchL.shape[0] - 1) / 2),
                                self.mag, flags=cv2.INTER_LINEAR + cv2.WARP_FILL_OUTLIERS)
-        patchLp = extract_pyhog_feature(patchLp, cell_size=4)
+        patchLp = extract_hog_feature(patchLp, cell_size=4)
         tmp_sc, _, _ = self.estimate_scale(self.model_patchLp, patchLp, self.mag)
         tmp_sc = np.clip(tmp_sc, a_min=0.6, a_max=1.4)
         scale_factor=current_scale_factor*tmp_sc
